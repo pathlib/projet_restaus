@@ -12,13 +12,12 @@ def math():
    
 
 def ert():
-    h=int(input("numeros de la question : "))
-    print(liste[h])
-    yu=input("reponse : ")
-    v=liste[h]+yu
-    print(v)
-    #ajouter la maniere de metre au meme endois la reponse
-
+   h=int(input("numeros de la question : "))
+   print(liste[h])
+   yu=input("reponse : ")
+   v=liste[h]+yu
+   liste[h]=v
+   print(liste)
 
 while True:
     math()
@@ -27,3 +26,4 @@ while True:
     if z == "fin":
         ert()
         print(liste)
+    
