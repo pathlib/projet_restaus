@@ -1,10 +1,15 @@
 liste = []
 
 def math():
-    question = input("Entrez une question : ")
-    a=liste.append(question)
-    return a
-
+    try:
+        question = input("Entrez une question : ")
+        if question =="":
+            raise KeyboardInterrupt
+        a=liste.append(question)
+        return a
+    except KeyboardInterrupt:
+        pass
+   
 
 def ert():
     h=int(input("numeros de la question : "))
@@ -12,6 +17,7 @@ def ert():
     yu=input("reponse : ")
     v=liste[h]+yu
     print(v)
+    #ajouter la maniere de metre au meme endois la reponse
 
 
 while True:
@@ -20,4 +26,4 @@ while True:
     z=input("fin : ")
     if z == "fin":
         ert()
-    
+        print(liste)
