@@ -1,20 +1,23 @@
 liste = []
 
-def generer_la_question():
-    question = input("Entrez un nombre : ")
+def math():
+    question = input("Entrez une question : ")
     a=liste.append(question)
     return a
 
 
-def generer_la_reponse():
+def ert():
     h=int(input("numeros de la question : "))
     print(liste[h])
-    yu=input("reponse")
+    yu=input("reponse : ")
     v=liste[h]+yu
     print(v)
 
 
 while True:
-    generer_la_question()
+    math()
     print(liste)
-    generer_la_reponse()
+    z=input("fin : ")
+    if z == "fin":
+        ert()
+    
