@@ -1,6 +1,6 @@
 liste = []
 
-def math():
+def question():
     try:
         question = input("Entrez une question : ")
         if question =="":
@@ -17,7 +17,7 @@ def suppresion():
     del liste[h]
     print(liste,"supr")
 
-def ert():
+def reponse():
    h=int(input("numeros de la question : "))
    print(liste[h])
    yu=input("reponse : ")
@@ -25,14 +25,18 @@ def ert():
    liste[h]=v
    print(liste)
 
+
+    
+
+
+
 while True:
-    math()
+    question()
     print(liste)
     z=input("fin : ")
     if z == "fin":
-        ert()
+        reponse()
         print(liste)
         print(liste[0])
     elif z == "supr":
         suppresion()
-    
