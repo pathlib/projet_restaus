@@ -10,6 +10,12 @@ def math():
     except KeyboardInterrupt:
         pass
    
+def suppresion():
+    print("supretion")
+    print(liste)
+    h=int(input("numeros de la question : "))
+    del liste[h]
+    print(liste,"supr")
 
 def ert():
    h=int(input("numeros de la question : "))
@@ -26,4 +32,7 @@ while True:
     if z == "fin":
         ert()
         print(liste)
+        print(liste[0])
+    elif z == "supr":
+        suppresion()
     
