@@ -25,7 +25,11 @@ def reponse():
    liste[h]=v
    print(liste)
 
-
+def repbool():
+    h=int(input("numeros de la question : "))
+    print(liste[h])
+    
+    
     
 
 
@@ -33,7 +37,7 @@ def reponse():
 while True:
     question()
     print(liste)
-    z=input("fin : ")
+    z=input("fin/supr : ")
     if z == "fin":
         reponse()
         print(liste)
