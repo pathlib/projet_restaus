@@ -1,12 +1,12 @@
 liste = []
 
-def math():
+def generer_la_question():
     question = input("Entrez un nombre : ")
     a=liste.append(question)
     return a
 
 
-def ert():
+def generer_la_reponse():
     h=int(input("numeros de la question : "))
     print(liste[h])
     yu=input("reponse")
@@ -15,6 +15,6 @@ def ert():
 
 
 while True:
-    math()
+    generer_la_question()
     print(liste)
-    ert()
+    generer_la_reponse()
