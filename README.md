@@ -1,4 +1,3 @@
-# projet_restaus
 # Projet Restau
 
 Ce projet Python a pour objectif de centraliser et structurer les informations des **Restos du Cœur** afin de les exploiter dans une **interface graphique (GUI)** dédiée à un logiciel de **reconditionnement de matériel informatique**.
