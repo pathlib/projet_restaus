@@ -1,0 +1,10 @@
+[project]
+name = "projet_restau"
+version = "0.0.15"
+description = "fichier des des restaus  du coeur pour une gui de du logicil reconditionnement "
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Pathlib", email = "gautroncyber@proton.me" }
+]
