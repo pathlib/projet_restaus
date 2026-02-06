@@ -1,7 +1,7 @@
 [project]
 name = "projet_restau"
 version = "0.0.15"
-description = "fichier des des restaus  du coeur pour une gui de du logicil reconditionnement "
+description = "Projet Python contenant les données des Restos du Cœur, destinées à être utilisées dans une interface graphique du logiciel de reconditionnement de matériel informatique. "
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
