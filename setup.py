@@ -1,4 +1,4 @@
-liste = []
+ liste = []
 
 def question():
     try:
@@ -14,8 +14,12 @@ def suppresion():
     print("supretion")
     print(liste)
     h=int(input("numeros de la question : "))
-    del liste[h]
-    print(liste,"supr")
+    try:
+        del liste[h]
+        print(liste,"supr")
+    except IndexError:
+        print("il n y a aucune donnée a suprimer")
+   
 
 def reponse():
    h=int(input("numeros de la question : "))
@@ -38,7 +42,10 @@ def repbool():
 def rep():
     print("recap")
     for reponse in liste:
-        print(reponse)
+        if None is liste:
+            print("aucune donnee")
+        else:
+            print(reponse)
 
 
 while True:
@@ -49,7 +56,7 @@ while True:
         z=input("fin/supr/bool : ")
         if z == "fin":
             reponse()
-            print(liste)
+            
             print(liste[0])
         elif z == "supr":
            suppresion()
