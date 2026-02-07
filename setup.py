@@ -9,7 +9,7 @@ def question():
         return a
     except KeyboardInterrupt:
         pass
-   
+
 def suppresion():
     print("supretion")
     print(liste)
@@ -28,19 +28,25 @@ def reponse():
 def repbool():
     h=int(input("numeros de la question : "))
     print(liste[h])
-    
-    
-    
+    valeur=input("valeur booeene : ")
+    if valeur == "True" or "False":
+        g=liste[h]+valeur
+        print (g)
+    else:
+         print("erreur")
+
 
 
 
 while True:
     question()
     print(liste)
-    z=input("fin/supr : ")
+    z=input("fin/supr/bool : ")
     if z == "fin":
         reponse()
         print(liste)
         print(liste[0])
     elif z == "supr":
         suppresion()
+    elif z == "bool":
+        repbool()
