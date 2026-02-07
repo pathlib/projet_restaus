@@ -10,6 +10,7 @@ def question():
     except KeyboardInterrupt:
         pass
 
+
 def suppresion():
     print("supretion")
     print(liste)
