@@ -1,4 +1,4 @@
- liste = []
+liste = []
 
 def question():
     try:
@@ -22,12 +22,15 @@ def suppresion():
    
 
 def reponse():
-   h=int(input("numeros de la question : "))
-   print(liste[h])
-   yu=input("reponse : ")
-   v=liste[h]+yu
-   liste[h]=v
-   print(liste)
+   try:
+       h=int(input("numeros de la question : "))
+       print(liste[h])
+       yu=input("reponse : ")
+       v=liste[h]+yu
+       liste[h]=v
+       print(liste)
+   except IndexError:
+       print("aucune reponse a affiche")
 
 def repbool():
     try:
@@ -40,7 +43,7 @@ def repbool():
         else:
             print("erreur")
     except IndexError:
-         print("aucune valeur ")
+         print("aucune valeur boleene a affiche")
 
 def rep():
     print("recap")
