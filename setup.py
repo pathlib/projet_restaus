@@ -35,18 +35,25 @@ def repbool():
     else:
          print("erreur")
 
-
+def rep():
+    print("recap")
+    for reponse in liste:
+        print(reponse)
 
 
 while True:
-    question()
-    print(liste)
-    z=input("fin/supr/bool : ")
-    if z == "fin":
-        reponse()
+    a=input("action 1/action 2 : ")
+    if a == "1":
+        question()
         print(liste)
-        print(liste[0])
-    elif z == "supr":
-        suppresion()
-    elif z == "bool":
-        repbool()
+        z=input("fin/supr/bool : ")
+        if z == "fin":
+            reponse()
+            print(liste)
+            print(liste[0])
+        elif z == "supr":
+           suppresion()
+        elif z == "bool":
+           repbool()
+    elif a =="2":
+         rep()
