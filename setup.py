@@ -10,7 +10,6 @@ def question():
     except KeyboardInterrupt:
         pass
 
-
 def suppresion():
     print("supretion")
     print(liste)
@@ -31,14 +30,17 @@ def reponse():
    print(liste)
 
 def repbool():
-    h=int(input("numeros de la question : "))
-    print(liste[h])
-    valeur=input("valeur booeene : ")
-    if valeur == "True" or "False":
-        g=liste[h]+valeur
-        print (g)
-    else:
-         print("erreur")
+    try:
+        h=int(input("numeros de la question : "))
+        print(liste[h])
+        valeur=input("valeur booeene : ")
+        if valeur == "True" or "False":
+            g=liste[h]+valeur
+            print (g)
+        else:
+            print("erreur")
+    except IndexError:
+         print("aucune valeur ")
 
 def rep():
     print("recap")
