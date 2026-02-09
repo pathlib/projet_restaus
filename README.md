@@ -4,6 +4,7 @@ Ce projet Python a pour objectif de centraliser et structurer les informations d
 
 Il sert de base de données légère et facilement maintenable, pensée pour être intégrée simplement dans une application existante ou en cours de développement.
 
-Le projet est volontairement minimaliste pour garantir une bonne lisibilité du code et une évolution progressive selon les besoins futurs.
+Le projet est volontairement minimaliste pour garantir une bonne lisibilité du code et une évolution progressive selon les besoins future...
+intergartion de Patyhlib,pdf,sqlite,datetime
 
 PROJET EN COUR...
