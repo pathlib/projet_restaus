@@ -1,5 +1,6 @@
 liste = []
 
+
 def question():
     try:
         question = input("Entrez une question : ")
@@ -10,8 +11,9 @@ def question():
     except KeyboardInterrupt:
         pass
 
+
 def suppresion():
-    print("supretion")
+    print("suppretion")
     print(liste)
     h=int(input("numeros de la question : "))
     try:
@@ -19,7 +21,7 @@ def suppresion():
         print(liste,"supr")
     except IndexError:
         print("il n y a aucune donnée a suprimer")
-   
+
 
 def reponse():
    try:
@@ -31,6 +33,7 @@ def reponse():
        print(liste)
    except IndexError:
        print("aucune reponse a affiche")
+
 
 def repbool():
     try:
@@ -45,6 +48,7 @@ def repbool():
     except IndexError:
          print("aucune valeur boleene a affiche")
 
+
 def rep():
     print("recap")
     for reponse in liste:
@@ -54,15 +58,21 @@ def rep():
             print(reponse)
 
 
+def affiche():
+    for r in liste:
+        print("recap")
+        print(r)
+
+
 while True:
-    a=input("action 1/action 2 : ")
+    a=input("action 1/action 2/action3 : ")
     if a == "1":
         question()
         print(liste)
         z=input("fin/supr/bool : ")
         if z == "fin":
             reponse()
-            
+
             print(liste[0])
         elif z == "supr":
            suppresion()
@@ -70,3 +80,5 @@ while True:
            repbool()
     elif a =="2":
          rep()
+    elif a =="3":
+        affiche()
