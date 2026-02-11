@@ -76,21 +76,13 @@ def libre():
 def txt():
     try:
         DOSSIER.mkdir(parents=True, exist_ok=True)
+        with FICHIER.open("w", encoding="utf-8") as f:
+            for item in liste:
+                f.write(str(item) + "\n")
+        print("Fichier TXT sauvegardé :", FICHIER)
+    except Exception as e:
+        print("Erreur lors de la sauvegarde :", e)
 
-        dossier = Path.home() / "Bureau" / "Reconditionnement"
-        dossier.mkdir(exist_ok=True)
-        
-        fichier = dossier / "mon_fichier.txt"
-        fichier.write_text("Bonjour !", encoding="utf-8")
-        
-    except FileExistsError:
-        print("Le dossier existe déjà !")
-    except PermissionError as e:
-        print("Vous n'avez pas la permission d'écrire ici !",e)
-    except FileNotFoundError:
-        print("Le chemin est invalide ou un dossier intermédiaire est manquant !")
-    except OSError as e:
-        print("Erreur système :", e)
   #generation du fichier txt      
     
 
