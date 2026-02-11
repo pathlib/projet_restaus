@@ -75,6 +75,8 @@ def libre():
 
 def txt():
     try:
+        DOSSIER.mkdir(parents=True, exist_ok=True)
+
         dossier = Path.home() / "Bureau" / "Reconditionnement"
         dossier.mkdir(exist_ok=True)
         
