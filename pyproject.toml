@@ -1,6 +1,6 @@
 [project]
 name = "projet_restau"
-version = "0.0.20"
+version = "0.0.21"
 description = "Projet Python contenant les données des Restos du Cœur, destinées à être utilisées dans une interface graphique du logiciel de reconditionnement de matériel informatique. "
 readme = "README.md"
 requires-python = ">=3.9"
