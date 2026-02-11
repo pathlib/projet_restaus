@@ -1,6 +1,6 @@
-
 from pathlib import Path
 from datetime import datetime
+
 
 liste = []
 
@@ -14,7 +14,7 @@ def question():
         return a
     except KeyboardInterrupt:
         pass
-#ecriture des question
+
 
 def suppresion():
     print("suppretion")
@@ -25,7 +25,7 @@ def suppresion():
         print(liste,"supr")
     except IndexError:
         print("il n y a aucune donnée a suprimer")
-#suppretion  des question
+
 
 def reponse():
    try:
@@ -37,7 +37,7 @@ def reponse():
        print(liste)
    except IndexError:
        print("aucune reponse a affiche")
-#ecriture des reponse 
+
 
 def repbool():
     try:
@@ -51,7 +51,7 @@ def repbool():
             print("erreur")
     except IndexError:
          print("aucune valeur boleene a affiche")
-#creation des question en valeur booleene
+
 
 def rep():
     print("recap")
@@ -60,30 +60,35 @@ def rep():
             print("aucune donnee")
         else:
             print(reponse)
-#recap du fichier txt
+
 
 def affiche():
     for r in liste:
         print("recap")
         print(r)
-#affichage pour la seconde page 
+
 
 def libre():
     libres=input()
     liste.append("fcommentaire{libre}")
-#note pour question libre
+
 
 def txt():
     try:
-        DOSSIER.mkdir(parents=True, exist_ok=True)
-        with FICHIER.open("w", encoding="utf-8") as f:
-            for item in liste:
-                f.write(str(item) + "\n")
-        print("Fichier TXT sauvegardé :", FICHIER)
-    except Exception as e:
-        print("Erreur lors de la sauvegarde :", e)
-
-  #generation du fichier txt      
+        dossier = Path("dossier reconditionnement")
+        dossier.mkdir(exist_ok=True)
+        
+        fichier = dossier / "mon_fichier.txt"
+        fichier.write_text("Bonjour !", encoding="utf-8")
+        
+    except FileExistsError:
+        print("Le dossier existe déjà !")
+    except PermissionError:
+        print("Vous n'avez pas la permission d'écrire ici !")
+    except FileNotFoundError:
+        print("Le chemin est invalide ou un dossier intermédiaire est manquant !")
+    except OSError as e:
+        print("Erreur système :", e)
     
 
 def afficher_heure():
@@ -104,7 +109,7 @@ def afficher_heure():
 c=afficher_heure()
 print(c)
 liste.append(c)
-#gestion de l heure
+
 
 while True:
     a=input("action 1/action 2/action3 : ")
