@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 liste = []
 
 
@@ -64,6 +67,21 @@ def affiche():
         print(r)
 
 
+def txt():
+    try:
+        fichier = Path("mon_fichier.txt")
+        fichier.write_text(" ".join(liste), encoding="utf-8")
+    except TypeError:
+        print("La donnée n'est pas du texte")
+    except PermissionError:
+        print("Permission refusée")
+    except FileNotFoundError:
+        print("Dossier introuvable")
+    except OSError as e:
+        print("Erreur système :", e)
+
+txt()
+
 while True:
     a=input("action 1/action 2/action3 : ")
     if a == "1":
@@ -82,3 +100,6 @@ while True:
          rep()
     elif a =="3":
         affiche()
+    elif a =="4":
+        print("save en .txt")
+        txt()
