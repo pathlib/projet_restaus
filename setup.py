@@ -85,6 +85,25 @@ def txt():
         print("Erreur système :", e)
 
 
+def afficher_heure():
+    """
+    Affiche l'heure actuelle au format HH:MM:SS
+    """
+    try:
+        maintenant = datetime.now()  # récupère la date et l'heure actuelles
+        heure_str = maintenant.strftime("%H:%M:%S")  # formate en heure:minute:seconde
+        print("Heure actuelle :", heure_str)
+        return heure_str
+    except Exception as e:
+        # Attrape toute erreur inattendue
+        print("Erreur lors de la récupération de l'heure :", e)
+        return None
+
+
+c=afficher_heure()
+liste.append(c)
+# a finir d implemente
+
 while True:
     a=input("action 1/action 2/action3 : ")
     if a == "1":
