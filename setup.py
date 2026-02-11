@@ -69,18 +69,21 @@ def affiche():
 
 def txt():
     try:
-        fichier = Path("mon_fichier.txt")
-        fichier.write_text(" ".join(liste), encoding="utf-8")
-    except TypeError:
-        print("La donnée n'est pas du texte")
+        dossier = Path("dossier reconditionnement")
+        dossier.mkdir(exist_ok=True)
+        
+        fichier = dossier / "mon_fichier.txt"
+        fichier.write_text("Bonjour !", encoding="utf-8")
+        
+    except FileExistsError:
+        print("Le dossier existe déjà !")
     except PermissionError:
-        print("Permission refusée")
+        print("Vous n'avez pas la permission d'écrire ici !")
     except FileNotFoundError:
-        print("Dossier introuvable")
+        print("Le chemin est invalide ou un dossier intermédiaire est manquant !")
     except OSError as e:
         print("Erreur système :", e)
 
-txt()
 
 while True:
     a=input("action 1/action 2/action3 : ")
