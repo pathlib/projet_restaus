@@ -1,5 +1,5 @@
+
 from pathlib import Path
-from datetime import datetime
 
 
 liste = []
@@ -14,7 +14,7 @@ def question():
         return a
     except KeyboardInterrupt:
         pass
-
+#ecriture des question
 
 def suppresion():
     print("suppretion")
@@ -25,7 +25,7 @@ def suppresion():
         print(liste,"supr")
     except IndexError:
         print("il n y a aucune donnée a suprimer")
-
+#suppretion  des question
 
 def reponse():
    try:
@@ -37,21 +37,21 @@ def reponse():
        print(liste)
    except IndexError:
        print("aucune reponse a affiche")
-
+#ecriture des reponse 
 
 def repbool():
     try:
         h=int(input("numeros de la question : "))
         print(liste[h])
         valeur=input("valeur booeene : ")
-        if valeur == "True" or "False":
+        if valeur == ["True","False"]:
             g=liste[h]+valeur
             print (g)
         else:
             print("erreur")
     except IndexError:
          print("aucune valeur boleene a affiche")
-
+#creation des question en valeur booleene
 
 def rep():
     print("recap")
@@ -60,13 +60,18 @@ def rep():
             print("aucune donnee")
         else:
             print(reponse)
-
+#recap du fichier txt
 
 def affiche():
     for r in liste:
         print("recap")
         print(r)
+#affichage pour la seconde page 
 
+def libre():
+    libres=input()
+    liste.append("fcommentaire{libre}")
+#note pour question libre
 
 def txt():
     try:
@@ -84,7 +89,8 @@ def txt():
         print("Le chemin est invalide ou un dossier intermédiaire est manquant !")
     except OSError as e:
         print("Erreur système :", e)
-
+  #generation du fichier txt      
+    
 
 def afficher_heure():
     """
@@ -102,8 +108,9 @@ def afficher_heure():
 
 
 c=afficher_heure()
+print(c)
 liste.append(c)
-# a finir d implemente
+#gestion de l heure
 
 while True:
     a=input("action 1/action 2/action3 : ")
@@ -119,6 +126,8 @@ while True:
            suppresion()
         elif z == "bool":
            repbool()
+        elif z == "libre":
+            libre()
     elif a =="2":
          rep()
     elif a =="3":
