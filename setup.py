@@ -83,8 +83,8 @@ def txt():
         
     except FileExistsError:
         print("Le dossier existe déjà !")
-    except PermissionError:
-        print("Vous n'avez pas la permission d'écrire ici !")
+    except PermissionError as e:
+        print("Vous n'avez pas la permission d'écrire ici !",e)
     except FileNotFoundError:
         print("Le chemin est invalide ou un dossier intermédiaire est manquant !")
     except OSError as e:
