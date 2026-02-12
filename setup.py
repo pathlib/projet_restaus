@@ -3,8 +3,6 @@ from datetime import datetime
 
 
 liste = []
-
-
 def question():
     try:
         question = input("Entrez une question : ")
@@ -73,7 +71,6 @@ def libre():
     liste.append("fcommentaire{libre}")
 
 
-
 def txt():
     try:
         home = Path.home()
@@ -103,9 +100,6 @@ def txt():
     except OSError as e:
         print(f"Erreur système : {e}")
 
-
-
-    
 
 def afficher_heure():
     """
