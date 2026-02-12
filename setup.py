@@ -68,7 +68,7 @@ def affiche():
 
 def libre():
     libres=input()
-    liste.append("fcommentaire{libre}")
+    liste.append(f"commentaire{libre}")
 
 
 def txt():
