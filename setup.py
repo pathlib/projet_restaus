@@ -135,6 +135,40 @@ def sauvegarder_json(liste):
         print(e)
 
 
+def charger_json():
+    try:
+        home = Path.home()
+
+        if (home / "Desktop").exists():
+            bureau = home / "Desktop"
+        elif (home / "Bureau").exists():
+            bureau = home / "Bureau"
+        else:
+            bureau = home
+
+        dossier = bureau / "reconditionnement"
+
+        nomjson = input("Nom du fichier à charger (sans .json) : ")
+        fichier = dossier / f"{nomjson}.json"
+
+        if not fichier.exists():
+            print("Fichier introuvable.")
+            return []
+
+        with open(fichier, "r", encoding="utf-8") as f:
+            liste = json.load(f)
+
+        print("JSON chargé depuis :", fichier)
+        return liste
+
+    except json.JSONDecodeError:
+        print("Erreur : fichier JSON invalide")
+        return []
+    except Exception as e:
+        print("Erreur :", e)
+        return []
+
+
 while True:
     a=input("action 1/action 2/action3 : ")
     if a == "1":
