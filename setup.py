@@ -73,22 +73,37 @@ def libre():
     liste.append("fcommentaire{libre}")
 
 
+
 def txt():
     try:
-        dossier = Path("dossier reconditionnement")
+        home = Path.home()
+
+        # Détecter le dossier Bureau / Desktop
+        if (home / "Desktop").exists():
+            bureau = home / "Desktop"
+        elif (home / "Bureau").exists():
+            bureau = home / "Bureau"
+        else:
+            # fallback : dossier utilisateur
+            bureau = home
+
+        # Créer le dossier
+        dossier = bureau / "reconditionnement"
         dossier.mkdir(exist_ok=True)
-        
+
+        # Créer le fichier
         fichier = dossier / "mon_fichier.txt"
         fichier.write_text("Bonjour !", encoding="utf-8")
-        
-    except FileExistsError:
-        print("Le dossier existe déjà !")
+
+        print("Dossier et fichier créés ici :", dossier)
+
     except PermissionError:
         print("Vous n'avez pas la permission d'écrire ici !")
-    except FileNotFoundError:
-        print("Le chemin est invalide ou un dossier intermédiaire est manquant !")
     except OSError as e:
         print("Erreur système :", e)
+
+
+
     
 
 def afficher_heure():
