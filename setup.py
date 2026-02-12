@@ -1,16 +1,23 @@
-
-
 from pathlib import Path
 from datetime import datetime, date, time, timedelta
 
 
 liste = []
+def afficher_heure():
+    maintenant = datetime.now()
+    date_str = maintenant.strftime("%d/%m/%Y")
+    heure_str = maintenant.strftime("%H:%M:%S")
+    print("Date :", date_str)
+    print("Heure :", heure_str)
+    return f"{date_str} {heure_str}"
+
+
 def question():
     try:
         question = input("Entrez une question : ")
         if question =="":
             raise KeyboardInterrupt
-        a=liste.append({"question": question , "reponse": None, "type": "normale", "date": None})
+        a=liste.append({"question": question , "reponse": None, "type": "normale", "date": afficher_heure()})
         return a
     except KeyboardInterrupt:
         pass
@@ -33,7 +40,7 @@ def reponse():
        print(liste[h])
        yu=input("reponse : ")
        liste[h]["reponse"]=yu
-       print(liste["question"])
+       print(liste)
    except IndexError as e:
        print(f"aucune reponse a affiche {e}")
 
@@ -95,23 +102,6 @@ def txt():
         print(f"Erreur système : {e}")
 
 
-def afficher_heure():
-    maintenant = datetime.now()
-    date_str = maintenant.strftime("%d/%m/%Y")
-    heure_str = maintenant.strftime("%H:%M:%S")
-    return date_str, heure_str
-
-date_, heure_ = afficher_heure()
-print("Date :", date_)
-print("Heure :", heure_)
-
-
-
-c=afficher_heure()
-print(c)
-liste.append(c)
-
-
 def sauvegarder_json(liste):
     try:
         home = Path.home()
@@ -167,4 +157,3 @@ while True:
         elif sauvegarde == "2":
             print("fichier sauvegarder en .json")
             sauvegarder_json(liste)
-
