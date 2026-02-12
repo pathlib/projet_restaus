@@ -23,8 +23,8 @@ def suppresion():
     try:
         del liste[h]
         print(liste,"supr")
-    except IndexError:
-        print("il n y a aucune donnée a suprimer")
+    except IndexError as e :
+        print(f"il n y a aucune donnée a suprimer {e}")
 
 
 def reponse():
@@ -35,8 +35,8 @@ def reponse():
        v=liste[h]+yu
        liste[h]=v
        print(liste)
-   except IndexError:
-       print("aucune reponse a affiche")
+   except IndexError as e:
+       print(f"aucune reponse a affiche {e}")
 
 
 def repbool():
@@ -49,8 +49,8 @@ def repbool():
             print (g)
         else:
             print("erreur")
-    except IndexError:
-         print("aucune valeur boleene a affiche")
+    except IndexError as e:
+         print(f"aucune valeur boleene a affiche {e}")
 
 
 def rep():
@@ -98,10 +98,10 @@ def txt():
         fichier.write_text(contenu, encoding="utf-8")
         print("Dossier et fichier créés ici :", dossier)
 
-    except PermissionError:
-        print("Vous n'avez pas la permission d'écrire ici !")
+    except PermissionError as e:
+        print(f"Vous n'avez pas la permission d'écrire ici !{e}")
     except OSError as e:
-        print("Erreur système :", e)
+        print(f"Erreur système : {e}")
 
 
 
@@ -118,7 +118,7 @@ def afficher_heure():
         return heure_str
     except Exception as e:
         # Attrape toute erreur inattendue
-        print("Erreur lors de la récupération de l'heure :", e)
+        print(f"Erreur lors de la récupération de l'heure :{e}")
         return None
 
 
@@ -128,7 +128,7 @@ liste.append(c)
 
 
 while True:
-    a=input("action 1/action 2/action3 : ")
+    a=input("action 1/action 2/action3/action 4 : ")
     if a == "1":
         question()
         print(liste)
