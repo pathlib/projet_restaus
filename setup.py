@@ -130,7 +130,7 @@ def sauvegarder_json(liste):
         print("Permission refusée")
     except OSError as e:
         print("Erreur système :", e)
-    except Exeption as e:
+    except Exception as e:
         print(e)
 
 
