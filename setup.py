@@ -107,7 +107,7 @@ def afficher_heure():
     heure_str = maintenant.strftime("%H:%M:%S")
     return date_str, heure_str
 
-date_, heure_ = date_heure_sep()
+date_, heure_ = afficher_heure()
 print("Date :", date_)
 print("Heure :", heure_)
 
