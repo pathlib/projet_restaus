@@ -179,7 +179,7 @@ while True:
         if sauvegarde == "1" :
             print("fichier sauvegarder en .txt")
             txt()
-        elif savegarde == "2":
+        elif sauvegarde == "2":
             print("fichier sauvegarder en .json")
             sauvegarder_json()
 
