@@ -100,6 +100,8 @@ def txt():
         print(f"Vous n'avez pas la permission d'écrire ici !{e}")
     except OSError as e:
         print(f"Erreur système : {e}")
+    except Exception as e :
+        print(e)
 
 
 def sauvegarder_json(liste):
