@@ -8,7 +8,7 @@ def question():
         question = input("Entrez une question : ")
         if question =="":
             raise KeyboardInterrupt
-        a=liste.append(question)
+        a=liste.append({"question": question , "reponse": None, "type": "normale", "date": None})
         return a
     except KeyboardInterrupt:
         pass
@@ -30,8 +30,7 @@ def reponse():
        h=int(input("numeros de la question : "))
        print(liste[h])
        yu=input("reponse : ")
-       v=liste[h]+yu
-       liste[h]=v
+       liste[h]["reponse"]=yu
        print(liste)
    except IndexError as e:
        print(f"aucune reponse a affiche {e}")
@@ -40,10 +39,11 @@ def reponse():
 def repbool():
     try:
         h=int(input("numeros de la question : "))
-        print(liste[h])
+        print(liste[h]["question"])
         valeur=input("valeur booeene : ")
         if valeur == ["True","False"]:
-            g=liste[h]+valeur
+            liste[h]["repopnse"]=valeur
+            liste[h]="bool"
             print (g)
         else:
             print("erreur")
@@ -101,7 +101,7 @@ def txt():
         print(f"Erreur système : {e}")
 
 
-def afficher_heure():
+"""def afficher_heure():
     maintenant = datetime.now()
     date_str = maintenant.strftime("%d/%m/%Y")
     heure_str = maintenant.strftime("%H:%M:%S")
@@ -115,7 +115,7 @@ print("Heure :", heure_)
 
 c=afficher_heure()
 print(c)
-liste.append(c)
+liste.append(c)"""
 
 def sauvegarder_json(liste):
     try:
@@ -173,12 +173,6 @@ while True:
         elif sauvegarde == "2":
             print("fichier sauvegarder en .json")
             sauvegarder_json(liste)
-
-
-
-
-
-
 
 
 
