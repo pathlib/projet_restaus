@@ -126,7 +126,7 @@ c=afficher_heure()
 print(c)
 liste.append(c)
 
-def sauvegarder_json():
+def sauvegarder_json(liste):
     try:
         home = Path.home()
 
@@ -181,7 +181,7 @@ while True:
             txt()
         elif sauvegarde == "2":
             print("fichier sauvegarder en .json")
-            sauvegarder_json()
+            sauvegarder_json(liste)
 
 
 
