@@ -90,8 +90,8 @@ def txt():
         dossier.mkdir(exist_ok=True)
 
         # Créer le fichier
-        
-        fichier = dossier / "mon_fichier.txt"
+        monfichier=input("")
+        fichier = dossier / nomfichier
         contenu = "\n".join(map(str, liste))
         fichier.write_text(contenu, encoding="utf-8")
         print("Dossier et fichier créés ici :", dossier)
@@ -130,7 +130,7 @@ def sauvegarder_json(liste):
 
 
 while True:
-    a=input("action 1/action 2/action3/action 4 : ")
+    a=input("action 1/action 2/action3 : ")
     if a == "1":
         question()
         print(liste)
