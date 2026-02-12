@@ -102,18 +102,15 @@ def txt():
 
 
 def afficher_heure():
-    """
-    Affiche l'heure actuelle au format HH:MM:SS
-    """
-    try:
-        maintenant = datetime.now()  # récupère la date et l'heure actuelles
-        heure_str = maintenant.strftime("%H:%M:%S")  # formate en heure:minute:seconde
-        print("Heure actuelle :", heure_str)
-        return heure_str
-    except Exception as e:
-        # Attrape toute erreur inattendue
-        print(f"Erreur lors de la récupération de l'heure :{e}")
-        return None
+    maintenant = datetime.now()
+    date_str = maintenant.strftime("%d/%m/%Y")
+    heure_str = maintenant.strftime("%H:%M:%S")
+    return date_str, heure_str
+
+date_, heure_ = date_heure_sep()
+print("Date :", date_)
+print("Heure :", heure_)
+
 
 
 c=afficher_heure()
