@@ -1,3 +1,5 @@
+
+
 from pathlib import Path
 from datetime import datetime, date, time, timedelta
 
@@ -31,7 +33,7 @@ def reponse():
        print(liste[h])
        yu=input("reponse : ")
        liste[h]["reponse"]=yu
-       print(liste)
+       print(liste["question"])
    except IndexError as e:
        print(f"aucune reponse a affiche {e}")
 
@@ -41,10 +43,9 @@ def repbool():
         h=int(input("numeros de la question : "))
         print(liste[h]["question"])
         valeur=input("valeur booeene : ")
-        if valeur == ["True","False"]:
-            liste[h]["repopnse"]=valeur
-            liste[h]="bool"
-            print (g)
+        if valeur == "True" or "False":
+            liste[h]["type"]=valeur
+            print(liste)
         else:
             print("erreur")
     except IndexError as e:
@@ -58,13 +59,6 @@ def rep():
             print("aucune donnee")
         else:
             print(reponse)
-
-
-def affiche():
-    for r in liste:
-        print("recap")
-        print(r)
-
 
 def libre():
     libres=input()
@@ -101,7 +95,7 @@ def txt():
         print(f"Erreur système : {e}")
 
 
-"""def afficher_heure():
+def afficher_heure():
     maintenant = datetime.now()
     date_str = maintenant.strftime("%d/%m/%Y")
     heure_str = maintenant.strftime("%H:%M:%S")
@@ -115,7 +109,8 @@ print("Heure :", heure_)
 
 c=afficher_heure()
 print(c)
-liste.append(c)"""
+liste.append(c)
+
 
 def sauvegarder_json(liste):
     try:
@@ -162,9 +157,8 @@ while True:
             libre()
     elif a =="2":
          rep()
+    
     elif a =="3":
-        affiche()
-    elif a =="4":
         print("choisiser votre mode de sauvegarde txt,json,pdf word ")
         sauvegarde=input(".txt,json,pdf,word")
         if sauvegarde == "1" :
@@ -173,7 +167,4 @@ while True:
         elif sauvegarde == "2":
             print("fichier sauvegarder en .json")
             sauvegarder_json(liste)
-
-
-
 
