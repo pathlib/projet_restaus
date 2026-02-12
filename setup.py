@@ -51,7 +51,7 @@ def repbool():
         h=int(input("numeros de la question : "))
         print(liste[h]["question"])
         valeur=input("valeur booeene : ")
-        if valeur == "True" or "False":
+        if valeur == "True" or valeur == "False":
             liste[h]["type"]=valeur
             print(liste)
         else:
@@ -62,15 +62,16 @@ def repbool():
 
 def rep():
     print("recap")
-    for reponse in liste:
-        if None is liste:
-            print("aucune donnee")
-        else:
+    if not liste:
+        print("aucune donnée")
+    else:
+        for reponse in liste:
             print(reponse)
+
 
 def libre():
     libres=input()
-    liste.append(f"commentaire{libre}")
+    liste.append(f"commentaire{libres}")
 
 
 def txt():
