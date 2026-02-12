@@ -117,8 +117,9 @@ def sauvegarder_json(liste):
 
         dossier = bureau / "reconditionnement"
         dossier.mkdir(exist_ok=True)
+        nomjson=input("")
 
-        fichier = dossier / "donnees.json"
+        fichier = dossier / f"{nomjson}.json"
 
         with open(fichier, "w", encoding="utf-8") as f:
             json.dump(liste, f, indent=4, ensure_ascii=False)
@@ -129,6 +130,8 @@ def sauvegarder_json(liste):
         print("Permission refusée")
     except OSError as e:
         print("Erreur système :", e)
+    except Exeption as e:
+        print(e)
 
 
 while True:
