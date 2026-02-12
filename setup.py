@@ -92,9 +92,10 @@ def txt():
         dossier.mkdir(exist_ok=True)
 
         # Créer le fichier
+        
         fichier = dossier / "mon_fichier.txt"
-        fichier.write_text("Bonjour !", encoding="utf-8")
-
+        contenu = "\n".join(map(str, liste))
+        fichier.write_text(contenu, encoding="utf-8")
         print("Dossier et fichier créés ici :", dossier)
 
     except PermissionError:
