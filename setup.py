@@ -91,7 +91,7 @@ def txt():
 
         # Créer le fichier
         monfichier=input("")
-        fichier = dossier / nomfichier
+        fichier = dossier / nomfichier.txt
         contenu = "\n".join(map(str, liste))
         fichier.write_text(contenu, encoding="utf-8")
         print("Dossier et fichier créés ici :", dossier)
