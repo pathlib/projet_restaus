@@ -197,3 +197,5 @@ while True:
         elif sauvegarde == "2":
             print("fichier sauvegarder en .json")
             sauvegarder_json(liste)
+        elif sauvegarde == "3":
+            charger_json()
