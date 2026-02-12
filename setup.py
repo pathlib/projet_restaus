@@ -132,7 +132,7 @@ while True:
     if a == "1":
         question()
         print(liste)
-        z=input("fin/supr/bool : ")
+        z=input("fin/supr/bool/libre : ")
         if z == "fin":
             reponse()
 
