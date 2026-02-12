@@ -148,5 +148,7 @@ while True:
     elif a =="3":
         affiche()
     elif a =="4":
-        print("save en .txt")
-        txt()
+        print("choisiser votre mode de sauvegarde txt,json,pdf word ")
+        sauvegarde=input("")
+        if sauvegarde =="1":
+            txt()
