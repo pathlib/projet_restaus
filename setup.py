@@ -126,6 +126,32 @@ c=afficher_heure()
 print(c)
 liste.append(c)
 
+def sauvegarder_json():
+    try:
+        home = Path.home()
+
+        if (home / "Desktop").exists():
+            bureau = home / "Desktop"
+        elif (home / "Bureau").exists():
+            bureau = home / "Bureau"
+        else:
+            bureau = home
+
+        dossier = bureau / "reconditionnement"
+        dossier.mkdir(exist_ok=True)
+
+        fichier = dossier / "donnees.json"
+
+        with open(fichier, "w", encoding="utf-8") as f:
+            json.dump(liste, f, indent=4, ensure_ascii=False)
+
+        print("JSON créé ici :", fichier)
+
+    except PermissionError:
+        print("Permission refusée")
+    except OSError as e:
+        print("Erreur système :", e)
+
 
 while True:
     a=input("action 1/action 2/action3/action 4 : ")
@@ -149,6 +175,20 @@ while True:
         affiche()
     elif a =="4":
         print("choisiser votre mode de sauvegarde txt,json,pdf word ")
-        sauvegarde=input("")
-        if sauvegarde =="1":
+        sauvegarde=input(".txt,json,pdf,word")
+        if sauvegarde == "1" :
+            print("fichier sauvegarder en .txt")
             txt()
+        elif savegarde == "2":
+            print("fichier sauvegarder en .json")
+            sauvegarder_json()
+
+
+
+
+
+
+
+
+
+
