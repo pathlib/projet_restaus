@@ -19,6 +19,7 @@ def question():
         if question =="":
             raise KeyboardInterrupt
         a=liste.append({"question": question , "reponse": None, "type": "normale", "date": afficher_heure()})
+        print(f"{a} est ce que c est vide")
         return a
     except KeyboardInterrupt:
         pass
