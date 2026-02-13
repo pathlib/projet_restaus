@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import datetime, date, time, timedelta
 import json
-
+import sqlite3
 
 liste = []
 def afficher_heure():
@@ -15,13 +15,35 @@ def afficher_heure():
 
 def question():
     try:
-        question = input("Entrez une question : ")
-        if question =="":
-            raise KeyboardInterrupt
-        a=liste.append({"question": question , "reponse": None, "type": "normale", "date": afficher_heure()})
-        return a
+        q = input("Entrez une question : ")
+        if not q:
+            return
+
+        conn = sqlite3.connect("reconditionnement.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO questions (question, reponse, type, date)
+            VALUES (?, ?, ?, ?)
+        """, (q, None, "normale", afficher_heure()))
+
+        conn.commit()
+
+    except sqlite3.IntegrityError:
+        print("Erreur : donnée déjà existante ou invalide.")
+
+    except sqlite3.OperationalError as e:
+        print("Erreur SQL :", e)
+
     except KeyboardInterrupt:
-        pass
+        print("\nAnnulé par l'utilisateur.")
+
+    finally:
+        try:
+            conn.close()
+        except:
+            pass
+
 
 
 def suppresion():
