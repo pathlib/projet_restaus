@@ -19,7 +19,7 @@ def question():
         if not q:
             return
 
-        conn = sqlite3.connect("reconditionnement.db")
+        conn = sqlite3.connect("/home/tonnom/Desktop/reconditionnement.db")
         cursor = conn.cursor()
 
         cursor.execute("""
