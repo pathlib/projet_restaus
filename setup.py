@@ -18,7 +18,7 @@ def question():
         question = input("Entrez une question : ")
         if question =="":
             raise KeyboardInterrupt
-        liste.append({"question": question , "reponse": None, "type": "normale", "date": afficher_heure()})
+        liste.append({"question": question , "reponse": "None", "type": "normale", "date": afficher_heure()})
     except KeyboardInterrupt:
         pass
 
