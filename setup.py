@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import datetime, date, time, timedelta
 import json
-
+import csv
 
 liste = []
 def afficher_heure():
@@ -169,6 +169,33 @@ def charger_json():
         return []
 
 
+def creer_csv(nom_fichier, liste):
+    """
+    Crée un fichier CSV avec les données fournies.
+    
+    :param nom_fichier: Le nom du fichier CSV à créer (ex. 'personnes.csv')
+    :param liste: Liste de dictionnaires contenant les lignes de données (ex. [{'Nom': 'Alice', 'Âge': 30}, ...])
+    """
+    # Si la liste est vide, afficher un message
+    if not liste:
+        print("La liste est vide.")
+        return
+    
+    # Extraire les clés du premier dictionnaire pour les utiliser comme en-têtes de colonnes
+    champs = liste[0].keys()
+
+    # Ouvrir le fichier CSV en mode écriture
+    with open(nom_fichier, mode='w', newline='') as fichier_csv:
+        writer = csv.DictWriter(fichier_csv, fieldnames=champs)
+        writer.writeheader()  # Écrire les en-têtes
+        writer.writerows(liste)  # Écrire les lignes de données
+
+    print(f"Fichier '{nom_fichier}' créé avec succès.")
+
+# Appel de la fonction
+creer_csv("personnes.csv", liste)
+
+
 while True:
     print("========menue principale=========")
     a=input("1 enregistre votre question/2 afficher le reacap/3 enregistre votre progression: ")
@@ -193,7 +220,7 @@ while True:
     
     elif a =="3":
         print("choisiser votre mode de sauvegarde txt,json,pdf word ")
-        sauvegarde=input(".txt,json,pdf,word")
+        sauvegarde=input(".txt,json,charger_json,CSV,pdf,word")
         if sauvegarde == "1" :
             print("fichier sauvegarder en .txt")
             txt()
@@ -202,3 +229,7 @@ while True:
             sauvegarder_json(liste)
         elif sauvegarde == "3":
             liste=charger_json()
+        elif sauvegarde == "4":
+            nomcsv=input("")
+            creer_csv(nomcsv,liste)
+            
