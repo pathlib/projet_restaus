@@ -60,13 +60,16 @@ def repbool():
 
 
 def rep():
-    print("recap")
+    print("Recap")
     if not liste:
-        print("aucune donnée")
+        print("Aucune donnée")
     else:
-        print(f"{'question':<10} {'reponse':<5} {'type':<10} {'commentaire':<10}{'date':<10}")
+        # Affichage des en-têtes avec un alignement approprié
+        print(f"{'question':<20} {'reponse':<10} {'type':<10} {'commentaire':<20} {'date':<10}")
         for ligne in liste:
-            print(f"{ligne['question']:<10} {ligne['reponse']:<5} {ligne['type']:<10}{ligne["commentaire"]:<20} {ligne['date']:<10}")
+            # Affichage des valeurs avec un alignement approprié
+            print(f"{ligne['question']:<20} {ligne['reponse']:<10} {ligne['type']:<10} {ligne['commentaire']:<20} {ligne['date']:<10}")
+
 
 
 def libre():
