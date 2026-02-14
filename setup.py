@@ -171,7 +171,7 @@ def charger_json():
 
 while True:
     print("========menue principale=========")
-    a=input("action 1/action 2/action3 : ")
+    a=input("1 enregistre votre question/2 afficher le reacap/3 enregistre votre progression: ")
     if a == "1":
         question()
         print(liste)
