@@ -18,7 +18,7 @@ def question():
         question = input("Entrez une question : ")
         if question =="":
             raise KeyboardInterrupt
-        liste.append({"question": question , "reponse": "None", "type": "normale", "date": afficher_heure()})
+        liste.append({"question": question , "reponse": "None", "type": "normale","commentaire":"None","date": afficher_heure()})
     except KeyboardInterrupt:
         pass
 
@@ -77,7 +77,7 @@ def rep():
 
 def libre():
     libres=input()
-    liste.append(f"commentaire{libres}")
+    liste["commentaire"]=libres
 
 
 def txt():
