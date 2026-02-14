@@ -172,6 +172,7 @@ def charger_json():
 
 
 while True:
+    print("========menue principale=========")
     a=input("action 1/action 2/action3 : ")
     if a == "1":
         question()
