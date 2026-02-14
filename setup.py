@@ -76,8 +76,9 @@ def rep():
 
 
 def libre():
-    libres=input()
-    liste["commentaire"]=libres
+    libres=input("votre commentaire : ")
+    h=question("")
+    liste[h]["commentaire"]=libres
 
 
 def txt():
