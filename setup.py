@@ -186,8 +186,10 @@ while True:
            repbool()
         elif z == "libre":
             libre()
+    
     elif a =="2":
          rep()
+    
     
     elif a =="3":
         print("choisiser votre mode de sauvegarde txt,json,pdf word ")
