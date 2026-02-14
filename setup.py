@@ -64,9 +64,9 @@ def rep():
     if not liste:
         print("aucune donnée")
     else:
-        print(f"{'Nom':<10} {'Âge':<5} {'Ville':<10}")
+        print(f"{'question':<10} {'reponse':<5} {'type':<10} {'commentaire':<10}{'date':<10}")
         for ligne in liste:
-            print(f"{ligne['question']:<10} {ligne['reponse']:<5} {ligne['type']:<10} {ligne['date']:<10}")
+            print(f"{ligne['question']:<10} {ligne['reponse']:<5} {ligne['type']:<10}{ligne["commentaire"]:<20} {ligne['date']:<10}")
 
 
 def libre():
