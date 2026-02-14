@@ -69,15 +69,9 @@ def rep():
             print(f"{ligne['question']:<10} {ligne['reponse']:<5} {ligne['type']:<10} {ligne['date']}")
 
 
-
-
-
-
-
-
 def libre():
-    libres=input("votre commentaire : ")
-    h=question("")
+    libres = input("votre commentaire : ")
+    h=int(input("numeros de la question"))
     liste[h]["commentaire"]=libres
 
 
