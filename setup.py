@@ -61,6 +61,7 @@ def repbool():
 
 def rep():
     print("Recap")
+    print("_______________"
     if not liste:
         print("Aucune donnée")
     else:
