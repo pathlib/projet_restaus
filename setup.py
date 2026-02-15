@@ -80,12 +80,12 @@ def rep():
         print("Aucune donnée")
         return
     else:
-        # Affichage des en-têtes avec un alignement approprié
         print(f"{'question':<20} {'reponse':<10} {'type':<10} {'commentaire':<20} {'date':<10}")
         for ligne in liste:
-            # Affichage des valeurs avec un alignement approprié
             print(f"{ligne['question']:<20} {ligne['reponse']:<10} {ligne['type']:<10} {ligne['commentaire']:<20} {ligne['date']:<10}")
-            delterm()
+            y=input("finish")
+            if y == "finish":
+                delterm()
 
 
 def libre():
@@ -117,7 +117,7 @@ def txt():
         contenu = "\n".join(map(str, liste))
         fichier.write_text(contenu, encoding="utf-8")
         print("Dossier et fichier créés ici :", dossier)
-        
+        delterm()
     except PermissionError as e:
         print(f"Vous n'avez pas la permission d'écrire ici !{e}")
     except OSError as e:
@@ -147,7 +147,7 @@ def sauvegarder_json(liste):
             json.dump(liste, f, indent=4, ensure_ascii=False)
 
         print("JSON créé ici :", fichier)
-        
+        delterm()
     except PermissionError:
         print("Permission refusée")
     except OSError as e:
@@ -189,9 +189,9 @@ def charger_json():
         print("Erreur :", e)
         return []
 
-
+"""
 def creer_csv(nom_fichier, liste):
-    """
+    
     Crée un fichier CSV avec les données fournies.
     
     :param nom_fichier: Le nom du fichier CSV à créer (ex. 'personnes.csv')
@@ -218,6 +218,7 @@ creer_csv("personnes.csv", liste)"""
 
 
 while True:
+    delterm()
     print("========menue principale=========")
     a=input("1 enregistre votre question/2 afficher le reacap/3 enregistre votre progression: ")
     if a == "1":
@@ -252,3 +253,4 @@ while True:
         elif sauvegarde == "4":
             nomcsv=input("")
             creer_csv(nomcsv,liste)
+            
