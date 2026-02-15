@@ -8,6 +8,9 @@ import time
 
 liste = []
 
+def delterm():
+    os.system('clear')
+
 
 def afficher_heure():
     maintenant = datetime.now()
@@ -25,19 +28,18 @@ def question():
             raise KeyboardInterrupt
         print(question)
         liste.append({"question": question , "reponse": "None", "type": "normale","commentaire":"None","date": afficher_heure()})
-        
+        delterm()
     except KeyboardInterrupt:
         pass
 
 
 def suppresion():
     print("suppretion")
-    print(liste)
     h=int(input("numeros de la question : "))
+    print(liste[h]['question'])
     try:
         del liste[h]
-        print(liste,"supr")
-        
+        delterm()
     except IndexError as e :
         print(f"il n y a aucune donnée a suprimer {e}")
 
@@ -49,7 +51,7 @@ def reponse():
        yu=input("reponse : ")
        liste[h]["reponse"]=yu
        print(f"la question est : {liste[h]["question"]},reponse : {liste[h]["reponse"]}")
-       
+       delterm()
        
    except IndexError as e:
        print(f"aucune reponse a affiche {e}")
@@ -63,6 +65,7 @@ def repbool():
         if valeur == "True" or valeur == "False":
             liste[h]["type"]=valeur
             print(liste)
+            delterm()
             
         else:
             print("erreur")
@@ -75,13 +78,14 @@ def rep():
     print("_______________")
     if not liste:
         print("Aucune donnée")
+        return
     else:
         # Affichage des en-têtes avec un alignement approprié
         print(f"{'question':<20} {'reponse':<10} {'type':<10} {'commentaire':<20} {'date':<10}")
         for ligne in liste:
             # Affichage des valeurs avec un alignement approprié
             print(f"{ligne['question']:<20} {ligne['reponse']:<10} {ligne['type']:<10} {ligne['commentaire']:<20} {ligne['date']:<10}")
-            
+            delterm()
 
 
 def libre():
