@@ -7,9 +7,7 @@ import time
 
 
 liste = []
-def delterm():
-    time.sleep(3)
-    os.system('clear')
+
 
 def afficher_heure():
     maintenant = datetime.now()
@@ -25,7 +23,9 @@ def question():
         question = input("Entrez une question : ")
         if question =="":
             raise KeyboardInterrupt
+        print(question)
         liste.append({"question": question , "reponse": "None", "type": "normale","commentaire":"None","date": afficher_heure()})
+        
     except KeyboardInterrupt:
         pass
 
@@ -37,7 +37,7 @@ def suppresion():
     try:
         del liste[h]
         print(liste,"supr")
-        delterm()
+        
     except IndexError as e :
         print(f"il n y a aucune donnée a suprimer {e}")
 
@@ -45,11 +45,12 @@ def suppresion():
 def reponse():
    try:
        h=int(input("numeros de la question : "))
-       print(liste[h])
+       print(liste[h]["question"])
        yu=input("reponse : ")
        liste[h]["reponse"]=yu
-       print(liste)
-       delterm()
+       print(f"la question est : {liste[h]["question"]},reponse : {liste[h]["reponse"]}")
+       
+       
    except IndexError as e:
        print(f"aucune reponse a affiche {e}")
 
@@ -62,7 +63,7 @@ def repbool():
         if valeur == "True" or valeur == "False":
             liste[h]["type"]=valeur
             print(liste)
-            delterm()
+            
         else:
             print("erreur")
     except IndexError as e:
@@ -80,14 +81,14 @@ def rep():
         for ligne in liste:
             # Affichage des valeurs avec un alignement approprié
             print(f"{ligne['question']:<20} {ligne['reponse']:<10} {ligne['type']:<10} {ligne['commentaire']:<20} {ligne['date']:<10}")
-            delterm()
+            
 
 
 def libre():
     libres = input("votre commentaire : ")
     h=int(input("numeros de la question"))
     liste[h]["commentaire"]=libres
-    delterm()
+    
 
 def txt():
     try:
@@ -112,7 +113,7 @@ def txt():
         contenu = "\n".join(map(str, liste))
         fichier.write_text(contenu, encoding="utf-8")
         print("Dossier et fichier créés ici :", dossier)
-        delterm()
+        
     except PermissionError as e:
         print(f"Vous n'avez pas la permission d'écrire ici !{e}")
     except OSError as e:
@@ -142,7 +143,7 @@ def sauvegarder_json(liste):
             json.dump(liste, f, indent=4, ensure_ascii=False)
 
         print("JSON créé ici :", fichier)
-        delterm()
+        
     except PermissionError:
         print("Permission refusée")
     except OSError as e:
@@ -191,7 +192,7 @@ def creer_csv(nom_fichier, liste):
     
     :param nom_fichier: Le nom du fichier CSV à créer (ex. 'personnes.csv')
     :param liste: Liste de dictionnaires contenant les lignes de données (ex. [{'Nom': 'Alice', 'Âge': 30}, ...])
-    """
+    
     # Si la liste est vide, afficher un message
     if not liste:
         print("La liste est vide.")
@@ -209,7 +210,7 @@ def creer_csv(nom_fichier, liste):
     print(f"Fichier '{nom_fichier}' créé avec succès.")
 
 # Appel de la fonction
-creer_csv("personnes.csv", liste)
+creer_csv("personnes.csv", liste)"""
 
 
 while True:
@@ -217,12 +218,11 @@ while True:
     a=input("1 enregistre votre question/2 afficher le reacap/3 enregistre votre progression: ")
     if a == "1":
         question()
-        print(liste)
         z=input("fin/supr/bool/libre : ")
         if z == "fin":
             reponse()
 
-            print(liste[0])
+            
         elif z == "supr":
            suppresion()
         elif z == "bool":
@@ -248,4 +248,3 @@ while True:
         elif sauvegarde == "4":
             nomcsv=input("")
             creer_csv(nomcsv,liste)
-            
