@@ -2,8 +2,15 @@ from pathlib import Path
 from datetime import datetime, date, time, timedelta
 import json
 import csv
+import os
+import time
+
 
 liste = []
+def delterm():
+    time.sleep(3)
+    os.system('clear')
+
 def afficher_heure():
     maintenant = datetime.now()
     date_str = maintenant.strftime("%d/%m/%Y")
@@ -30,6 +37,7 @@ def suppresion():
     try:
         del liste[h]
         print(liste,"supr")
+        delterm()
     except IndexError as e :
         print(f"il n y a aucune donnée a suprimer {e}")
 
@@ -41,6 +49,7 @@ def reponse():
        yu=input("reponse : ")
        liste[h]["reponse"]=yu
        print(liste)
+       delterm()
    except IndexError as e:
        print(f"aucune reponse a affiche {e}")
 
@@ -53,6 +62,7 @@ def repbool():
         if valeur == "True" or valeur == "False":
             liste[h]["type"]=valeur
             print(liste)
+            delterm()
         else:
             print("erreur")
     except IndexError as e:
@@ -70,14 +80,14 @@ def rep():
         for ligne in liste:
             # Affichage des valeurs avec un alignement approprié
             print(f"{ligne['question']:<20} {ligne['reponse']:<10} {ligne['type']:<10} {ligne['commentaire']:<20} {ligne['date']:<10}")
-
+            delterm()
 
 
 def libre():
     libres = input("votre commentaire : ")
     h=int(input("numeros de la question"))
     liste[h]["commentaire"]=libres
-
+    delterm()
 
 def txt():
     try:
@@ -102,7 +112,7 @@ def txt():
         contenu = "\n".join(map(str, liste))
         fichier.write_text(contenu, encoding="utf-8")
         print("Dossier et fichier créés ici :", dossier)
-
+        delterm()
     except PermissionError as e:
         print(f"Vous n'avez pas la permission d'écrire ici !{e}")
     except OSError as e:
@@ -132,7 +142,7 @@ def sauvegarder_json(liste):
             json.dump(liste, f, indent=4, ensure_ascii=False)
 
         print("JSON créé ici :", fichier)
-
+        delterm()
     except PermissionError:
         print("Permission refusée")
     except OSError as e:
@@ -166,7 +176,7 @@ def charger_json():
 
         print("JSON chargé depuis :", fichier)
         return liste
-
+        delterm()
     except json.JSONDecodeError:
         print("Erreur : fichier JSON invalide")
         return []
