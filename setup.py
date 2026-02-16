@@ -172,8 +172,39 @@ def supprimer_utilisateur(id_utilisateur):
     conn.commit()
     conn.close()
 
+def txt():
+    try:
+        home = Path.home()
 
+        # Détecter le dossier Bureau / Desktop
+        if (home / "Desktop").exists():
+            bureau = home / "Desktop"
+        elif (home / "Bureau").exists():
+            bureau = home / "Bureau"
+        else:
+            # fallback : dossier utilisateur
+            bureau = home
+
+        # Créer le dossier
+        dossier = bureau / "reconditionnement"
+        dossier.mkdir(exist_ok=True)
+
+        # Créer le fichier
+        monfichier=input("")
+        fichier = dossier / f"{monfichier}.txt"
+        contenu = "\n".join(map(str, liste))
+        fichier.write_text(contenu, encoding="utf-8")
+        print("Dossier et fichier créés ici :", dossier)
+
+    except PermissionError as e:
+        print(f"Vous n'avez pas la permission d'écrire ici !{e}")
+    except OSError as e:
+        print(f"Erreur système : {e}")
+    except Exception as e :
+        print(e)
 # Sauvegarder la liste en JSON
+
+
 def sauvegarder_json(liste):
     try:
         home = Path.home()
