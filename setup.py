@@ -268,6 +268,44 @@ def charger_json():
         print("Erreur :", e)
         return []
 
+def sauvegarder_csv(liste):
+    try:
+        home = Path.home()
+
+        if (home / "Desktop").exists():
+            bureau = home / "Desktop"
+        elif (home / "Bureau").exists():
+            bureau = home / "Bureau"
+        else:
+            bureau = home
+
+        dossier = bureau / "reconditionnement"
+        dossier.mkdir(exist_ok=True)
+        nomcsv = input("Nom du fichier CSV : ")
+
+        fichier = dossier / f"{nomcsv}.csv"
+
+        # Ouvre le fichier en mode écriture
+        with open(fichier, mode='w', newline='', encoding="utf-8") as f:
+            # Si la liste n'est pas vide, on utilise la première ligne pour les en-têtes (les clés du dictionnaire)
+            if liste:
+                writer = csv.DictWriter(f, fieldnames=liste[0].keys())
+                writer.writeheader()  # Écriture des en-têtes (les clés du dictionnaire)
+                
+                # Écriture des lignes de données
+                for ligne in liste:
+                    writer.writerow(ligne)
+
+        print("CSV créé ici :", fichier)
+        delterm()  # Si tu as une fonction pour nettoyer ou terminer, garde-la ici
+    except PermissionError:
+        print("Permission refusée")
+    except OSError as e:
+        print("Erreur système :", e)
+    except Exception as e:
+        print(e)
+
+
 
 # Menu principal
 while True:
@@ -304,6 +342,5 @@ while True:
         elif sauvegarde == "3":
             liste=charger_json()
         elif sauvegarde == "4":
-            nomcsv=input("nom du fichier")
-            creer_csv(nomcsv,liste)
+            sauvegarder_csv(liste)
             
