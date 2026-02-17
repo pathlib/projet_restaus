@@ -5,7 +5,12 @@ import csv
 import os
 import time
 import platform
-import sqlite3
+from db_manager import (
+    create_db,
+    ajouter_utilisateurs,
+    afficher_utilisateurs,
+    supprimer_utilisateur)
+
 
 
 liste = []
@@ -37,7 +42,6 @@ def question():
             raise KeyboardInterrupt
         print(question)
         liste.append({"question": question, "reponse": "None", "type": "normale", "commentaire": "None", "date": afficher_heure()})
-        delterm()
     except KeyboardInterrupt:
         pass
 
@@ -45,42 +49,47 @@ def question():
 # Fonction pour supprimer une question de la liste
 def suppresion():
     print("Suppression")
-    h = int(input("Numéro de la question : "))
+    h = int(input("Numéro de la question : ")) - 1
     print(liste[h]['question'])
     try:
         del liste[h]
-        delterm()
+        print("Question supprimée.")
+        input("Appuyez sur Entrée pour continuer...")
     except IndexError as e:
         print(f"Il n'y a aucune donnée à supprimer {e}")
+        input("Appuyez sur Entrée pour continuer...")
 
 
 # Fonction pour ajouter une réponse à une question
 def reponse():
     try:
-        h = int(input("Numéro de la question : "))
+        h = int(input("Numéro de la question : ")) - 1
         print(liste[h]["question"])
         yu = input("Réponse : ")
         liste[h]["reponse"] = yu
         print(f"La question est : {liste[h]['question']}, réponse : {liste[h]['reponse']}")
-        delterm()
+        input("Appuyez sur Entrée pour continuer...")
     except IndexError as e:
         print(f"Aucune réponse à afficher {e}")
+        input("Appuyez sur Entrée pour continuer...")
 
 
 # Fonction pour saisir une valeur booléenne
 def repbool():
     try:
-        h = int(input("Numéro de la question : "))
+        h = int(input("Numéro de la question : ")) - 1
         print(liste[h]["question"])
         valeur = input("Valeur booléenne (True/False) : ")
         if valeur == "True" or valeur == "False":
             liste[h]["type"] = valeur
             print(liste)
-            delterm()
+            input("Appuyez sur Entrée pour continuer...")
         else:
             print("Erreur")
+            input("Appuyez sur Entrée pour continuer...")
     except IndexError as e:
         print(f"Aucune valeur booléenne à afficher {e}")
+        input("Appuyez sur Entrée pour continuer...")
 
 
 # Fonction pour afficher toutes les questions/réponses
@@ -89,88 +98,22 @@ def rep():
     print("_______________")
     if not liste:
         print("Aucune donnée")
-        return
+        input("Appuyez sur Entrée pour continuer...")
     else:
-        print(f"{'Question':<20} {'Réponse':<10} {'Type':<10} {'Commentaire':<20} {'Date':<10}")
-        for ligne in liste:
-            print(f"{ligne['question']:<20} {ligne['reponse']:<10} {ligne['type']:<10} {ligne['commentaire']:<20} {ligne['date']:<10}")
-            y = input("Finish ? ")
-            if y == "finish":
-                delterm()
+        print(f"{'N°':<5} {'Question':<20} {'Réponse':<10} {'Type':<10} {'Commentaire':<20} {'Date':<10}")
+        for i, ligne in enumerate(liste, 1):
+            print(f"{i:<5} {ligne['question']:<20} {ligne['reponse']:<10} {ligne['type']:<10} {ligne['commentaire']:<20} {ligne['date']:<10}")
+        
+        input("Appuyez sur Entrée pour continuer...")
 
 
 # Fonction pour ajouter un commentaire à une question
 def libre():
     libres = input("Votre commentaire : ")
-    h = int(input("Numéro de la question : "))
+    h = int(input("Numéro de la question : ")) - 1
     liste[h]["commentaire"] = libres
 
 
-# Création de la base de données SQLite
-def create_db():
-    conn = sqlite3.connect('ma_base.db')
-    c = conn.cursor()
-
-    # Création de la table si elle n'existe pas déjà
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS utilisateurs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            question TEXT NOT NULL,
-            reponse TEXT,
-            type TEXT,
-            commentaire TEXT,
-            date TEXT
-        )
-    ''')
-
-    # Sauvegarde des modifications
-    conn.commit()
-    conn.close()
-
-
-# Fonction pour ajouter une question à la base de données
-def ajouter_utilisateur(question, reponse, type_, commentaire, date):
-    conn = sqlite3.connect('ma_base.db')
-    c = conn.cursor()
-
-    # Insertion de la question dans la base de données
-    c.execute('''
-        INSERT INTO utilisateurs (question, reponse, type, commentaire, date)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (question, reponse, type_, commentaire, date))
-
-    # Sauvegarde des modifications
-    conn.commit()
-    conn.close()
-
-
-# Fonction pour afficher tous les utilisateurs (questions dans la base de données)
-def afficher_utilisateurs():
-    conn = sqlite3.connect('ma_base.db')
-    c = conn.cursor()
-
-    # Sélectionner toutes les questions
-    c.execute('SELECT * FROM utilisateurs')
-    utilisateurs = c.fetchall()
-
-    # Affichage des utilisateurs
-    for utilisateur in utilisateurs:
-        print(utilisateur)
-
-    conn.close()
-
-
-# Fonction pour supprimer une question de la base de données par ID
-def supprimer_utilisateur(id_utilisateur):
-    conn = sqlite3.connect('ma_base.db')
-    c = conn.cursor()
-
-    # Suppression de la question par ID
-    c.execute('DELETE FROM utilisateurs WHERE id = ?', (id_utilisateur,))
-
-    # Sauvegarde des modifications
-    conn.commit()
-    conn.close()
 
 def txt():
     try:
@@ -226,7 +169,7 @@ def sauvegarder_json(liste):
             json.dump(liste, f, indent=4, ensure_ascii=False)
 
         print("JSON créé ici :", fichier)
-        delterm()
+        input("Appuyez sur Entrée pour continuer...")
     except PermissionError:
         print("Permission refusée")
     except OSError as e:
@@ -297,7 +240,7 @@ def sauvegarder_csv(liste):
                     writer.writerow(ligne)
 
         print("CSV créé ici :", fichier)
-        delterm()  # Si tu as une fonction pour nettoyer ou terminer, garde-la ici
+        input("Appuyez sur Entrée pour continuer...")
     except PermissionError:
         print("Permission refusée")
     except OSError as e:
@@ -309,38 +252,58 @@ def sauvegarder_csv(liste):
 
 # Menu principal
 while True:
-    delterm()
-    print("======== Menu Principal ========")
-    a=input("1 enregistre votre question/2 afficher le reacap/3 enregistre votre progression: ")
-    if a == "1":
-        question()
-        z=input("fin/supr/bool/libre : ")
-        if z == "fin":
-            reponse()
+    try :
+        delterm()
+        print("======== Menu Principal ========\n")
+        a=input("/1 Enregistre votre question\n/2 Afficher le reacap\n/3 Enregistre votre progression\n\nChosisez une option a effectuer : (1/2/3)")
+        if a == "1":
+            question()
+            z=input("fin/supr/bool/libre : ")
+            if z == "fin":
+                reponse()
 
-            
-        elif z == "supr":
-           suppresion()
-        elif z == "bool":
-           repbool()
-        elif z == "libre":
-            libre()
-    
-    elif a =="2":
-         rep()
-    
-    
-    elif a =="3":
-        print("choisiser votre mode de sauvegarde txt,json,pdf word ")
-        sauvegarde=input(".txt,json,charger_json,CSV,pdf,word")
-        if sauvegarde == "1" :
-            print("fichier sauvegarder en .txt")
-            txt()
-        elif sauvegarde == "2":
-            print("fichier sauvegarder en .json")
-            sauvegarder_json(liste)
-        elif sauvegarde == "3":
-            liste=charger_json()
-        elif sauvegarde == "4":
-            sauvegarder_csv(liste)
-            
+                
+            elif z == "supr":
+               suppresion()
+            elif z == "bool":
+               repbool()
+            elif z == "libre":
+                libre()
+        
+        elif a =="2":
+             rep()
+        
+        
+        elif a =="3":
+            print("Choisissez votre mode de sauvegarde : 1.txt, 2.json, 3.charger_json, 4.CSV, 5.DB")
+            sauvegarde=input("Votre choix (1-5) : ")
+            if sauvegarde == "1" :
+                print("fichier sauvegarder en .txt")
+                txt()
+                input("Appuyez sur Entrée pour continuer...")
+            elif sauvegarde == "2":
+                print("fichier sauvegarder en .json")
+                sauvegarder_json(liste)
+            elif sauvegarde == "3":
+                liste=charger_json()
+            elif sauvegarde == "4":
+                sauvegarder_csv(liste)
+            elif sauvegarde == "5":
+                if not liste:
+                    print("Attention : La liste est vide. Ajoutez des questions (Menu 1) avant de sauvegarder.")
+                else:
+                    create_db()
+                    ajouter_utilisateurs(liste)
+                    print(f"{len(liste)} données sauvegardées en base de données.")
+
+                tt=input("Tapez 'affiche' pour voir, 'suppr' pour supprimer l'ID 1, ou Entrée pour quitter : ").strip().lower()
+                if tt == "affiche":
+                    afficher_utilisateurs()
+                    input("Appuyez sur Entrée pour continuer...")
+                if tt == "suppr":
+                    supprimer_utilisateur(1)
+                    afficher_utilisateurs()
+                    input("Appuyez sur Entrée pour continuer...")
+    except KeyboardInterrupt:
+        print("\nFermeture du programme...")
+        break
