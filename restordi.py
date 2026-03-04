@@ -1,111 +1,182 @@
-from pathlib import Path
-from datetime import datetime
-import json
+from __future__ import annotations
+
 import csv
+import json
+import logging
 import os
 import platform
 import sqlite3
+import tempfile
+import typing
+import webbrowser
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Optional
+
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 
-import webbrowser
+# ─── LOGGING ──────────────────────────────────────────────────────────────────
+_LOG_PATH: Path = Path.home() / "reconditionnement.log"
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s  %(levelname)-8s  %(name)s — %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.FileHandler(_LOG_PATH, encoding="utf-8"),
+        logging.StreamHandler(),
+    ],
+)
+log: logging.Logger = logging.getLogger("reconditionnement")
 
 # ─── CONFIGURATION ───────────────────────────────────────────────────────────
-liste = []
+liste: list[dict[str, Any]] = []
 
-home = Path.home()
+home: Path = Path.home()
 if (home / "Desktop").exists():
-    DB_PATH = home / "Desktop" / "ma_base.db"
+    DB_PATH: Path = home / "Desktop" / "ma_base.db"
 elif (home / "Bureau").exists():
     DB_PATH = home / "Bureau" / "ma_base.db"
 else:
     DB_PATH = home / "ma_base.db"
 
+log.debug("DB_PATH résolu → %s", DB_PATH)
+
 
 # ─── BASE DE DONNÉES ──────────────────────────────────────────────────────────
-def create_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("""CREATE TABLE IF NOT EXISTS utilisateurs (
-        id          INTEGER PRIMARY KEY AUTOINCREMENT,
-        question    TEXT    NOT NULL,
-        reponse     TEXT    DEFAULT 'None',
-        type        TEXT    DEFAULT 'normale',
-        commentaire TEXT    DEFAULT 'None',
-        date        TEXT    DEFAULT ''
-    )""")
-    conn.commit()
-    conn.close()
+def create_db() -> None:
+    """Crée la table utilisateurs si elle n'existe pas encore."""
+    log.info("Initialisation de la base de données : %s", DB_PATH)
+    try:
+        conn: sqlite3.Connection = sqlite3.connect(DB_PATH)
+        c: sqlite3.Cursor = conn.cursor()
+        c.execute("""CREATE TABLE IF NOT EXISTS utilisateurs (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            question    TEXT    NOT NULL,
+            reponse     TEXT    DEFAULT 'None',
+            type        TEXT    DEFAULT 'normale',
+            commentaire TEXT    DEFAULT 'None',
+            date        TEXT    DEFAULT ''
+        )""")
+        conn.commit()
+        log.debug("Table 'utilisateurs' vérifiée/créée.")
+    except sqlite3.Error as exc:
+        log.exception("Erreur lors de la création de la base : %s", exc)
+        raise
+    finally:
+        conn.close()
 
 
-def question_existe(question):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT id FROM utilisateurs WHERE question = ?", (question,))
-    result = c.fetchone()
-    conn.close()
-    return result is not None
+def question_existe(question: str) -> bool:
+    """Retourne True si la question existe déjà en base."""
+    try:
+        conn: sqlite3.Connection = sqlite3.connect(DB_PATH)
+        c: sqlite3.Cursor = conn.cursor()
+        c.execute("SELECT id FROM utilisateurs WHERE question = ?", (question,))
+        result: Optional[tuple[Any, ...]] = c.fetchone()
+        return result is not None
+    except sqlite3.Error as exc:
+        log.exception("Erreur lors de la vérification d'existence : %s", exc)
+        return False
+    finally:
+        conn.close()
 
 
-def ajouter_questions_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    for u in liste:
-        if "question" in u and not question_existe(u["question"]):
-            c.execute(
-                "INSERT INTO utilisateurs (question) VALUES (?)", (u["question"],)
-            )
-    conn.commit()
-    conn.close()
+def ajouter_questions_db() -> None:
+    """Insère dans la base les entrées de `liste` qui n'y sont pas encore."""
+    log.info("Envoi de %d entrée(s) potentielle(s) en base.", len(liste))
+    try:
+        conn: sqlite3.Connection = sqlite3.connect(DB_PATH)
+        c: sqlite3.Cursor = conn.cursor()
+        inserted: int = 0
+        for u in liste:
+            if "question" in u and not question_existe(u["question"]):
+                c.execute(
+                    "INSERT INTO utilisateurs (question) VALUES (?)", (u["question"],)
+                )
+                inserted += 1
+        conn.commit()
+        log.info("%d nouvelle(s) entrée(s) insérée(s).", inserted)
+    except sqlite3.Error as exc:
+        log.exception("Erreur lors de l'insertion en base : %s", exc)
+        raise
+    finally:
+        conn.close()
 
 
-def supprimer_question_db(id_q):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("DELETE FROM utilisateurs WHERE id = ?", (id_q,))
-    conn.commit()
-    conn.close()
+def supprimer_question_db(id_q: int) -> None:
+    """Supprime l'entrée d'id `id_q` de la base de données."""
+    log.info("Suppression de l'entrée ID=%d en base.", id_q)
+    try:
+        conn: sqlite3.Connection = sqlite3.connect(DB_PATH)
+        c: sqlite3.Cursor = conn.cursor()
+        c.execute("DELETE FROM utilisateurs WHERE id = ?", (id_q,))
+        conn.commit()
+        log.debug("Entrée ID=%d supprimée (%d ligne(s) affectée(s)).", id_q, c.rowcount)
+    except sqlite3.Error as exc:
+        log.exception("Erreur lors de la suppression ID=%d : %s", id_q, exc)
+        raise
+    finally:
+        conn.close()
 
 
-def charger_depuis_db():
+def charger_depuis_db() -> list[dict[str, Any]]:
+    """Charge toutes les entrées de la base dans la liste globale."""
     global liste
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT id, question, reponse, type, commentaire, date FROM utilisateurs")
-    rows = c.fetchall()
-    conn.close()
-    liste = [
-        {
-            "id": r[0],
-            "question": r[1],
-            "reponse": r[2] or "None",
-            "type": r[3] or "normale",
-            "commentaire": r[4] or "None",
-            "date": r[5] or "",
-        }
-        for r in rows
-    ]
-    return liste
+    log.info("Chargement depuis la base : %s", DB_PATH)
+    try:
+        conn: sqlite3.Connection = sqlite3.connect(DB_PATH)
+        c: sqlite3.Cursor = conn.cursor()
+        c.execute("SELECT id, question, reponse, type, commentaire, date FROM utilisateurs")
+        rows: list[tuple[Any, ...]] = c.fetchall()
+        liste = [
+            {
+                "id": r[0],
+                "question": r[1],
+                "reponse": r[2] or "None",
+                "type": r[3] or "normale",
+                "commentaire": r[4] or "None",
+                "date": r[5] or "",
+            }
+            for r in rows
+        ]
+        log.info("%d entrée(s) chargée(s) depuis la base.", len(liste))
+        return liste
+    except sqlite3.Error as exc:
+        log.exception("Erreur lors du chargement depuis la base : %s", exc)
+        raise
+    finally:
+        conn.close()
 
 
-def get_all_db():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("SELECT id, question, reponse, type, commentaire, date FROM utilisateurs")
-    rows = c.fetchall()
-    conn.close()
-    return rows
+def get_all_db() -> list[tuple[Any, ...]]:
+    """Retourne toutes les lignes brutes de la table utilisateurs."""
+    try:
+        conn: sqlite3.Connection = sqlite3.connect(DB_PATH)
+        c: sqlite3.Cursor = conn.cursor()
+        c.execute("SELECT id, question, reponse, type, commentaire, date FROM utilisateurs")
+        rows: list[tuple[Any, ...]] = c.fetchall()
+        log.debug("get_all_db : %d ligne(s) récupérée(s).", len(rows))
+        return rows
+    except sqlite3.Error as exc:
+        log.exception("Erreur lors de get_all_db : %s", exc)
+        return []
+    finally:
+        conn.close()
 
 
-def _get_dossier():
+def _get_dossier() -> Path:
+    """Retourne (et crée si besoin) le dossier d'export sur le Bureau."""
     if (home / "Desktop").exists():
-        bureau = home / "Desktop"
+        bureau: Path = home / "Desktop"
     elif (home / "Bureau").exists():
         bureau = home / "Bureau"
     else:
         bureau = home
-    dossier = bureau / "reconditionnement"
+    dossier: Path = bureau / "reconditionnement"
     dossier.mkdir(exist_ok=True)
+    log.debug("Dossier export : %s", dossier)
     return dossier
 
 
@@ -129,7 +200,7 @@ FONT_SM = ("Segoe UI", 9)
 
 # ─── FENÊTRE RÉCAP DÉTAIL ─────────────────────────────────────────────────────
 class FenetreRecap(tk.Toplevel):
-    def __init__(self, master, row: dict):
+    def __init__(self, master: tk.Tk, row: dict[str, Any]) -> None:
         super().__init__(master)
         self.title("📄  Récapitulatif")
         self.geometry("600x480")
@@ -139,11 +210,11 @@ class FenetreRecap(tk.Toplevel):
         self._build(row)
         self.transient(master)
         self.grab_set()
-        x = master.winfo_rootx() + (master.winfo_width() - 600) // 2
-        y = master.winfo_rooty() + (master.winfo_height() - 480) // 2
+        x: int = master.winfo_rootx() + (master.winfo_width() - 600) // 2
+        y: int = master.winfo_rooty() + (master.winfo_height() - 480) // 2
         self.geometry(f"+{x}+{y}")
 
-    def _section(self, parent, label, value, fg_val=FG):
+    def _section(self, parent: tk.Frame, label: str, value: str, fg_val: str = FG) -> None:
         tk.Label(parent, text=label, bg=BG2, fg=FG2, font=FONT_SM, anchor="w").pack(
             fill="x", padx=14, pady=(10, 2)
         )
@@ -164,7 +235,7 @@ class FenetreRecap(tk.Toplevel):
         txt.configure(state="disabled")
         txt.pack(fill="x")
 
-    def _build(self, row: dict):
+    def _build(self, row: dict[str, Any]) -> None:
         hdr = tk.Frame(self, bg=BG2, pady=12, padx=16)
         hdr.pack(fill="x")
         tk.Label(
@@ -226,8 +297,9 @@ class FenetreRecap(tk.Toplevel):
 
 # ─── APPLICATION ─────────────────────────────────────────────────────────────
 class App(tk.Tk):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
+        log.info("Démarrage de l'application Reconditionnement.")
         create_db()
         self.title("Reconditionnement")
         self.geometry("1100x700")
@@ -237,7 +309,7 @@ class App(tk.Tk):
         self._build()
         self.refresh_table()
 
-    def _style(self):
+    def _style(self) -> None:
         s = ttk.Style(self)
         s.theme_use("clam")
         s.configure(
@@ -324,7 +396,7 @@ class App(tk.Tk):
             bordercolor=BORDER,
         )
 
-    def _build(self):
+    def _build(self) -> None:
         hdr = tk.Frame(self, bg=BG2, pady=12, padx=20)
         hdr.pack(fill="x")
         tk.Label(
@@ -361,7 +433,7 @@ class App(tk.Tk):
         self.nb.bind("<<NotebookTabChanged>>", self._on_tab_change)
 
     # ── Tab 1 : Questions ─────────────────────────────────────────────────────
-    def _build_main(self, parent):
+    def _build_main(self, parent: ttk.Frame) -> None:
         left = tk.Frame(parent, bg=BG2, width=310)
         left.pack(side="left", fill="y", padx=(0, 6), pady=6)
         left.pack_propagate(False)
@@ -487,7 +559,7 @@ class App(tk.Tk):
         self.tree.tag_configure("normale", background=BG2)
 
     # ── Tab 2 : Base de données ───────────────────────────────────────────────
-    def _build_db(self, parent):
+    def _build_db(self, parent: ttk.Frame) -> None:
         top = tk.Frame(parent, bg=BG)
         top.pack(fill="x", pady=(8, 4), padx=8)
         tk.Label(
@@ -529,7 +601,7 @@ class App(tk.Tk):
         self._refresh_db_tab()
 
     # ── Tab 3 : Récapitulatif ─────────────────────────────────────────────────
-    def _build_recap(self, parent):
+    def _build_recap(self, parent: ttk.Frame) -> None:
         # Barre du haut
         top = tk.Frame(parent, bg=BG)
         top.pack(fill="x", pady=(8, 4), padx=8)
@@ -634,7 +706,7 @@ class App(tk.Tk):
 
         self._recap_canvas = canvas
 
-    def _refresh_recap(self):
+    def _refresh_recap(self) -> None:
         """Reconstruit les cartes de l'onglet récapitulatif."""
         # Vider
         for w in self.recap_inner.winfo_children():
@@ -775,7 +847,7 @@ class App(tk.Tk):
                 ).pack(side="left", fill="x", expand=True)
 
     # ── Tab 4 : Export / Import ───────────────────────────────────────────────
-    def _build_export(self, parent):
+    def _build_export(self, parent: ttk.Frame) -> None:
         frame = tk.Frame(parent, bg=BG)
         frame.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -814,7 +886,7 @@ class App(tk.Tk):
         self.lbl_export_status.pack()
 
     # ── Tab 5 : Aide ──────────────────────────────────────────────────────────
-    def _build_aide(self, parent):
+    def _build_aide(self, parent: ttk.Frame) -> None:
         """
         Onglet d'aide — affiche un fichier HTML hors ligne dans le navigateur
         par défaut du système (aucune dépendance externe requise).
@@ -1755,7 +1827,7 @@ class App(tk.Tk):
         # Afficher le statut du fichier dès l'ouverture
         self._maj_statut_aide(HTML_AIDE_PATH)
 
-    def _maj_statut_aide(self, html_path):
+    def _maj_statut_aide(self, html_path: Path) -> None:
         if html_path.exists():
             self.lbl_aide_fichier.config(
                 text=f"✔  Fichier détecté : {html_path}", fg=SUCCESS
@@ -1766,44 +1838,50 @@ class App(tk.Tk):
                 fg=WARNING,
             )
 
-    def _ouvrir_aide(self, html_path, html_defaut):
+    def _ouvrir_aide(self, html_path: Path, html_defaut: str) -> None:
         """Ouvre le fichier HTML dans le navigateur par défaut (hors ligne)."""
         import tempfile
 
-        if html_path.exists():
-            cible = html_path
-        else:
-            # Écrit le contenu par défaut dans un fichier temporaire
-            tmp = tempfile.NamedTemporaryFile(
-                mode="w",
-                suffix=".html",
-                encoding="utf-8",
-                delete=False,
-                prefix="aide_reconditionnement_",
-            )
-            tmp.write(html_defaut)
-            tmp.close()
-            cible = Path(tmp.name)
+        try:
+            if html_path.exists():
+                cible: Path = html_path
+                log.info("Ouverture de l'aide depuis le fichier : %s", cible)
+            else:
+                # Écrit le contenu par défaut dans un fichier temporaire
+                tmp = tempfile.NamedTemporaryFile(
+                    mode="w",
+                    suffix=".html",
+                    encoding="utf-8",
+                    delete=False,
+                    prefix="aide_reconditionnement_",
+                )
+                tmp.write(html_defaut)
+                tmp.close()
+                cible = Path(tmp.name)
+                log.info("aide.html absent — contenu intégré écrit dans %s", cible)
 
-        webbrowser.open(cible.as_uri())
+            webbrowser.open(cible.as_uri())
+        except OSError as exc:
+            log.exception("Impossible d'ouvrir l'aide : %s", exc)
+            messagebox.showerror("Erreur", f"Impossible d'ouvrir l'aide :\n{exc}", parent=self)
 
     # ─────────────────────────────────────────────────────────────────────────
     #  LOGIQUE
     # ─────────────────────────────────────────────────────────────────────────
 
-    def _on_tab_change(self, _event=None):
+    def _on_tab_change(self, _event: Optional[tk.Event] = None) -> None:
         """Rafraîchit le récap automatiquement à chaque visite de l'onglet."""
         try:
-            idx = self.nb.index(self.nb.select())
+            idx: int = self.nb.index(self.nb.select())
             if idx == 2:  # onglet Récapitulatif
                 self._refresh_recap()
-        except Exception:
-            pass
+        except Exception as exc:
+            log.debug("_on_tab_change exception ignorée : %s", exc)
 
-    def _now(self):
+    def _now(self) -> str:
         return datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-    def refresh_table(self):
+    def refresh_table(self) -> None:
         q = self.search_var.get().lower() if hasattr(self, "search_var") else ""
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -1824,7 +1902,7 @@ class App(tk.Tk):
             self.tree.insert("", "end", iid=str(i - 1), values=vals, tags=(tag,))
         self.lbl_count.config(text=f"{len(liste)} entrée(s) en mémoire")
 
-    def _on_select(self, _event=None):
+    def _on_select(self, _event: Optional[tk.Event] = None) -> None:
         sel = self.tree.selection()
         if not sel:
             return
@@ -1839,8 +1917,8 @@ class App(tk.Tk):
         t = row.get("type", "normale")
         self.cmb_type.set(t if t in ("normale", "True", "False") else "normale")
 
-    def _ajouter(self):
-        q = self.ent_question.get().strip()
+    def _ajouter(self) -> None:
+        q: str = self.ent_question.get().strip()
         if not q:
             messagebox.showwarning(
                 "Attention", "La question est obligatoire.", parent=self
@@ -1849,7 +1927,7 @@ class App(tk.Tk):
         if question_existe(q):
             messagebox.showinfo("Info", "Cette question est déjà en base.", parent=self)
             return
-        entry = {
+        entry: dict[str, Any] = {
             "question": q,
             "reponse": self.ent_reponse.get().strip() or "None",
             "type": self.cmb_type.get(),
@@ -1857,12 +1935,13 @@ class App(tk.Tk):
             "date": self._now(),
         }
         liste.append(entry)
+        log.info("Entrée ajoutée en mémoire : %s", q)
         ajouter_questions_db()
         self._clear_form()
         self.refresh_table()
         self._refresh_db_tab()
 
-    def _modifier(self):
+    def _modifier(self) -> None:
         sel = self.tree.selection()
         if not sel:
             messagebox.showinfo(
@@ -1878,7 +1957,7 @@ class App(tk.Tk):
         liste[idx]["commentaire"] = self.ent_comment.get().strip() or "None"
         self.refresh_table()
 
-    def _supprimer_mem(self):
+    def _supprimer_mem(self) -> None:
         sel = self.tree.selection()
         if not sel:
             messagebox.showinfo("Info", "Sélectionnez une ligne.", parent=self)
@@ -1892,36 +1971,39 @@ class App(tk.Tk):
             self._clear_form()
             self.refresh_table()
 
-    def _charger_db(self):
+    def _charger_db(self) -> None:
         charger_depuis_db()
         self.refresh_table()
+        log.info("Chargement BDD depuis l'interface : %d entrée(s).", len(liste))
         messagebox.showinfo(
             "Chargé", f"{len(liste)} entrée(s) chargée(s) depuis la base.", parent=self
         )
 
-    def _envoyer_db(self):
+    def _envoyer_db(self) -> None:
         if not liste:
             messagebox.showwarning("Vide", "La liste est vide.", parent=self)
             return
         ajouter_questions_db()
         self._refresh_db_tab()
+        log.info("Envoi liste → BDD : %d entrée(s).", len(liste))
         messagebox.showinfo(
             "OK", f"{len(liste)} entrée(s) envoyée(s) en base.", parent=self
         )
 
-    def _supprimer_db(self):
-        val = self.ent_del_id.get().strip()
+    def _supprimer_db(self) -> None:
+        val: str = self.ent_del_id.get().strip()
         if not val.isdigit():
             messagebox.showwarning("Erreur", "Entrez un ID valide.", parent=self)
             return
         if messagebox.askyesno(
             "Confirmer", f"Supprimer l'ID {val} de la base ?", parent=self
         ):
+            log.info("Suppression demandée pour ID=%s depuis l'interface.", val)
             supprimer_question_db(int(val))
             self._refresh_db_tab()
             self.ent_del_id.delete(0, "end")
 
-    def _refresh_db_tab(self):
+    def _refresh_db_tab(self) -> None:
         for item in self.tree_db.get_children():
             self.tree_db.delete(item)
         for row in get_all_db():
@@ -1930,13 +2012,13 @@ class App(tk.Tk):
                 tag = "normale"
             self.tree_db.insert("", "end", values=row, tags=(tag,))
 
-    def _clear_form(self):
+    def _clear_form(self) -> None:
         self.ent_question.delete(0, "end")
         self.ent_reponse.delete(0, "end")
         self.ent_comment.delete(0, "end")
         self.cmb_type.current(0)
 
-    def _ouvrir_recap(self):
+    def _ouvrir_recap(self) -> None:
         sel = self.tree.selection()
         if not sel:
             messagebox.showinfo(
@@ -1947,7 +2029,7 @@ class App(tk.Tk):
             return
         FenetreRecap(self, liste[int(sel[0])])
 
-    def _ouvrir_recap_db(self):
+    def _ouvrir_recap_db(self) -> None:
         sel = self.tree_db.selection()
         if not sel:
             return
@@ -1967,86 +2049,135 @@ class App(tk.Tk):
         )
 
     # ── Exports ───────────────────────────────────────────────────────────────
-    def _status(self, msg):
+    def _status(self, msg: str) -> None:
         self.lbl_export_status.config(text=msg)
         self.after(4000, lambda: self.lbl_export_status.config(text=""))
 
-    def _exp_txt(self):
-        nom = simpledialog.askstring(
+    def _exp_txt(self) -> None:
+        nom: Optional[str] = simpledialog.askstring(
             "TXT", "Nom du fichier (sans extension) :", parent=self
         )
         if not nom:
             return
 
         try:
-            f = _get_dossier() / f"{nom}.txt"
-            txts = []  # liste pour stocker toutes les lignes
+            f: Path = _get_dossier() / f"{nom}.txt"
 
-            for i, q in enumerate(liste, start=1):  # <--- utiliser 'liste', pas 'txts'
-                r = f"{i}\t{q['question']}\t{q['reponse']}\t{q['type']}\t{q['commentaire']}\t{q['date']}"
-                txts.append(r)  # ajouter chaque ligne à la liste
+            # Définir la largeur fixe de chaque colonne
+            COL_NUM: int = 5
+            COL_QUESTION: int = 35  # ← ajustez selon votre texte le plus long
+            COL_REPONSE: int = 20
+            COL_TYPE: int = 10
+            COL_COMMENT: int = 25
+            COL_DATE: int = 25
+            # La date reste à la fin, pas besoin de largeur fixe
 
-            f.write_text("\n".join(txts), encoding="utf-8")  # écrire toutes les lignes
+            # Ligne d'en-tête
+            entete: str = (
+                f"{'N°':<{COL_NUM}}"
+                f"{'Question':<{COL_QUESTION}}"
+                f"{'Réponse':<{COL_REPONSE}}"
+                f"{'Type':<{COL_TYPE}}"
+                f"{'Commentaire':<{COL_COMMENT}}"
+                f"{'Date':<{COL_DATE}}"
+            )
+            separateur: str = "-" * (COL_NUM + COL_QUESTION + COL_REPONSE + COL_TYPE + COL_COMMENT + COL_DATE)
+
+            txts: list[str] = [entete, separateur]
+
+            for i, q in enumerate(liste, start=1):
+                # Tronquer les textes trop longs avec "..."
+                def tronq(texte: Any, largeur: int) -> str:
+                    texte = str(texte) if texte else ""
+                    return texte if len(texte) <= largeur else texte[:largeur - 3] + "..."
+
+                ligne: str = (
+                    f"{str(i):<{COL_NUM}}"
+                    f"{tronq(q['question'], COL_QUESTION):<{COL_QUESTION}}"
+                    f"{tronq(q['reponse'], COL_REPONSE):<{COL_REPONSE}}"
+                    f"{tronq(q['type'], COL_TYPE):<{COL_TYPE}}"
+                    f"{tronq(q['commentaire'], COL_COMMENT):<{COL_COMMENT}}"
+                    f"{tronq(q['date'], COL_DATE):<{COL_DATE}}"
+
+                )
+                txts.append(ligne)
+
+            f.write_text("\n".join(txts), encoding="utf-8")
+            log.info("Export TXT réussi → %s", f)
             self._status(f"✔ TXT créé : {f}")
 
-        except Exception as e:
-            messagebox.showerror("Erreur", str(e), parent=self)
-    def _exp_json(self):
-        nom = simpledialog.askstring(
+        except OSError as exc:
+            log.exception("Erreur export TXT : %s", exc)
+            messagebox.showerror("Erreur", str(exc), parent=self)
+
+    def _exp_json(self) -> None:
+        nom: Optional[str] = simpledialog.askstring(
             "JSON", "Nom du fichier (sans extension) :", parent=self
         )
         if not nom:
             return
         try:
-            f = _get_dossier() / f"{nom}.json"
+            f: Path = _get_dossier() / f"{nom}.json"
             with open(f, "w", encoding="utf-8") as fp:
                 json.dump(liste, fp, indent=4, ensure_ascii=False)
+            log.info("Export JSON réussi → %s", f)
             self._status(f"✔ JSON créé : {f}")
-        except Exception as e:
-            messagebox.showerror("Erreur", str(e), parent=self)
+        except OSError as exc:
+            log.exception("Erreur export JSON : %s", exc)
+            messagebox.showerror("Erreur", str(exc), parent=self)
 
-    def _exp_csv(self):
-        nom = simpledialog.askstring(
+    def _exp_csv(self) -> None:
+        nom: Optional[str] = simpledialog.askstring(
             "CSV", "Nom du fichier (sans extension) :", parent=self
         )
         if not nom:
             return
         try:
-            cols = ["id", "question", "reponse", "type", "commentaire", "date"]
-            f = _get_dossier() / f"{nom}.csv"
+            cols: list[str] = ["id", "question", "reponse", "type", "commentaire", "date"]
+            f: Path = _get_dossier() / f"{nom}.csv"
             with open(f, "w", newline="", encoding="utf-8-sig") as fp:
-                w = csv.DictWriter(
+                w: csv.DictWriter[str] = csv.DictWriter(
                     fp, fieldnames=cols, extrasaction="ignore", delimiter=";"
                 )
                 w.writeheader()
                 for row in liste:
                     w.writerow({c: row.get(c, "") for c in cols})
+            log.info("Export CSV réussi → %s", f)
             self._status(f"✔ CSV créé : {f}")
-        except Exception as e:
-            messagebox.showerror("Erreur", str(e), parent=self)
+        except OSError as exc:
+            log.exception("Erreur export CSV : %s", exc)
+            messagebox.showerror("Erreur", str(exc), parent=self)
 
-    def _imp_json(self):
+    def _imp_json(self) -> None:
         global liste
-        nom = simpledialog.askstring(
+        nom: Optional[str] = simpledialog.askstring(
             "Importer JSON", "Nom du fichier (sans .json) :", parent=self
         )
         if not nom:
             return
         try:
-            f = _get_dossier() / f"{nom}.json"
+            f: Path = _get_dossier() / f"{nom}.json"
             if not f.exists():
+                log.warning("Import JSON : fichier introuvable → %s", f)
                 messagebox.showerror(
                     "Introuvable", f"Fichier non trouvé : {f}", parent=self
                 )
                 return
             with open(f, encoding="utf-8") as fp:
                 liste = json.load(fp)
+            log.info("Import JSON réussi depuis %s : %d entrée(s).", f, len(liste))
             self.refresh_table()
             self._status(f"✔ JSON chargé : {len(liste)} entrée(s)")
-        except Exception as e:
-            messagebox.showerror("Erreur", str(e), parent=self)
+        except (OSError, json.JSONDecodeError) as exc:
+            log.exception("Erreur import JSON : %s", exc)
+            messagebox.showerror("Erreur", str(exc), parent=self)
 
 
 if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    log.info("=== Lancement de reconditionnement_gui ===")
+    try:
+        app = App()
+        app.mainloop()
+    except Exception as exc:
+        log.critical("Erreur fatale non gérée : %s", exc, exc_info=True)
+        raise
